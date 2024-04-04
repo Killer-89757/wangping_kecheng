@@ -1,13 +1,13 @@
 import requests
-import time
+import asyncio
 
 
 class Downloader:
     def __init__(self):
         pass
 
-    def download(self, url):
+    async def download(self, url):
         # response = requests.get(url)
         # print(response)
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
         print("成功了")
