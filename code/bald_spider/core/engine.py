@@ -2,12 +2,13 @@ import asyncio
 from inspect import iscoroutine
 
 from bald_spider.core.download import Downloader
-from typing import Optional,Generator,Callable
+from typing import Optional,Generator,Callable,Final,Set
 from bald_spider.core.scheduler import Scheduler
 from bald_spider.spider import Spider
 from bald_spider.utils.spider import transform
 from bald_spider.execptions import OutputError
 from bald_spider.http.request import Request
+from bald_spider.task_manager import TaskManager
 
 class Engine:
     def __init__(self):
@@ -21,6 +22,8 @@ class Engine:
         self.spider:Optional[Spider] = None
         # 控制爬虫进行的开关
         self.running = False
+        # 初始化task管理器
+        self.task_manager:TaskManager= TaskManager()
 
     async def start_spider(self, spider):
         # 打开开关
@@ -84,7 +87,8 @@ class Engine:
             # todo 处理output
             if outputs:
                 await self._handle_spider_output(outputs)
-        asyncio.create_task(crawl_task(),name="crawl")
+        await self.task_manager.semaphore.acquire()
+        self.task_manager.create_task(crawl_task())
 
     async def _fetch(self,request):
         async def _success(_response):
@@ -121,11 +125,7 @@ class Engine:
         """
         # 调度器是否空闲
         # 下载器是否空闲
-        if self.scheduler.idle() and self.downloader.idle():
+        # 任务列表中是否为空
+        if self.scheduler.idle() and self.downloader.idle() and self.task_manager.all_done():
             return True
-        # 发起请求的task全部运行完毕
-        for task in asyncio.all_tasks():
-            # print(task.get_name())
-            if not task.done() and task.get_name() == "crawl":
-                return False
-        return True
+        return False
