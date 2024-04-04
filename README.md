@@ -28,11 +28,15 @@
     - spider.py  **爬虫工具：生成器转化工具等**
   - \__init__.py       **方便导包**
   - execption.py  **自定义异常**
+  - task_manager.py  **任务管理**
 - test：测试爬虫的代码
   - baidu_spider
     - \__init__.py 
     - baidu.py  **爬虫实例**
     - run.py     **项目启动文件**
+  - misc
+    - demo1.py **测试信号量**
+    - demo2.py **测试信号量**
 
 ## 项目文档
 
