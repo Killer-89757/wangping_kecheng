@@ -1,0 +1,3 @@
+
+class TransformTypeError(TypeError):
+    pass

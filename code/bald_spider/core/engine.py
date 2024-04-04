@@ -1,9 +1,11 @@
 import asyncio
+from inspect import iscoroutine
 
 from bald_spider.core.download import Downloader
 from typing import Optional,Generator,Callable
 from bald_spider.core.scheduler import Scheduler
 from bald_spider.spider import Spider
+from bald_spider.utils.spider import transform
 
 
 class Engine:
@@ -67,9 +69,28 @@ class Engine:
 
     async def _crawl(self,request):
         # todo 实现并发
-        await self._fetch(request)
+        outputs = await self._fetch(request)
+        # todo 处理output
+        if outputs:
+            async for output in outputs:
+                print(output)
+
 
     async def _fetch(self,request):
+        async def _success(_response):
+            callback: Callable = request.callback or self.spider.parse
+            # 得到的数据类型可能是异步生成器，同步生成器，无类型数据，需要兼容
+            # 当callback(_response)是None,直接跳出，默认直接返回None(就是无数据类型)
+            if _outputs := callback(_response):
+                # 是协程类型，等待执行即可
+                if iscoroutine(_outputs):
+                    await _outputs
+                else:
+                    # 是生成器类型，就都转化成异步生成器
+                    return transform(_outputs)
+
         _response = await self.downloader.fetch(request)
-        callback:Callable = request.callback or self.spider.parse
-        callback(_response)
+        # 能够得到结果调用到callback，说明上面的downloader下载成功了，但是实际网络请求中并不一定能成功
+        # 这个地方暂时只处理成功的代码
+        outputs = await _success(_response)
+        return outputs
