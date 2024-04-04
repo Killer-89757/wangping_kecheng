@@ -1,10 +1,8 @@
+from bald_spider.spider import Spider
+class BaiduSpider(Spider):
 
-class BaiduSpider:
+    # start_url ="https://www.baidu.com"
+    start_urls = ["https://www.baidu.com","https://www.baidu.com","https://www.baidu.com"]
 
-    start_url = "https://www.baidu.com"
-
-    def __init__(self):
-        pass
-
-    def start_request(self):
-        return self.start_url
+    # def start_request(self):
+    #     return self.start_urls[0]
