@@ -11,7 +11,7 @@ from bald_spider.http.request import Request
 from bald_spider.task_manager import TaskManager
 
 class Engine:
-    def __init__(self):
+    def __init__(self,settings):
         # 写类型注解 self.downloader: Downloader = Downloader()
         self.downloader:Optional[Downloader] = None
         # 我们使用yield的方式得到生成器，兼容于urls和url
@@ -23,7 +23,7 @@ class Engine:
         # 控制爬虫进行的开关
         self.running = False
         # 初始化task管理器
-        self.task_manager:TaskManager= TaskManager()
+        self.task_manager:TaskManager= TaskManager(settings.get("CONCURRENCY"))
 
     async def start_spider(self, spider):
         # 打开开关

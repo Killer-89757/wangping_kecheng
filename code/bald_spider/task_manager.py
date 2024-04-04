@@ -3,7 +3,7 @@ from typing import Set,Final
 from asyncio import Task,Future,Semaphore
 
 class TaskManager:
-    def __init__(self,total_concurrency=16):
+    def __init__(self,total_concurrency=8):
         # Final是制定了类型，不能改变
         self.current_task:Final[Set] = set()
         self.semaphore:Semaphore = Semaphore(total_concurrency)
