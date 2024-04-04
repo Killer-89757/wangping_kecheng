@@ -1,0 +1,1 @@
+from bald_spider.http.request import Request

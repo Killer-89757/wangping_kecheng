@@ -1,6 +1,9 @@
+import asyncio
+
 from bald_spider.core.download import Downloader
-from typing import Optional,Generator
+from typing import Optional,Generator,Callable
 from bald_spider.core.scheduler import Scheduler
+from bald_spider.spider import Spider
 
 
 class Engine:
@@ -11,8 +14,13 @@ class Engine:
         self.start_requests:Optional[Generator] = None
         # 初始化调度器
         self.scheduler:Optional[Scheduler] = None
+        # 初始化spider
+        self.spider:Optional[Spider] = None
 
     async def start_spider(self, spider):
+        # 得到spider
+        self.spider = spider
+
         # 初始化调度器和下载器
         self.scheduler = Scheduler()
         if hasattr(self.scheduler,"open"):
@@ -20,7 +28,12 @@ class Engine:
         self.downloader = Downloader()
         # 使用iter将任何变成类型变成generator、防止人为复写(不用yield,使用return)的时候构造的数据不是generator
         self.start_requests = iter(spider.start_request())
-        await self.crawl()
+        await self._open_spider()
+
+    async def _open_spider(self):
+        crawling = asyncio.create_task(self.crawl())
+        # 这个地方可以做其他事情
+        await crawling
 
     async def crawl(self):
         """主逻辑"""
@@ -53,4 +66,10 @@ class Engine:
         return await self.scheduler.next_request()
 
     async def _crawl(self,request):
-        await self.downloader.download(request)
+        # todo 实现并发
+        await self._fetch(request)
+
+    async def _fetch(self,request):
+        _response = await self.downloader.fetch(request)
+        callback:Callable = request.callback or self.spider.parse
+        callback(_response)

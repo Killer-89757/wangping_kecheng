@@ -4,5 +4,5 @@ class BaiduSpider(Spider):
     # start_url ="https://www.baidu.com"
     start_urls = ["https://www.baidu.com","https://www.baidu.com","https://www.baidu.com"]
 
-    # def start_request(self):
-    #     return self.start_urls[0]
+    def parse(self,response):
+        print("parse",response)
