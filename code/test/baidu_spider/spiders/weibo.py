@@ -1,9 +1,9 @@
 from bald_spider.spider import Spider
 from bald_spider import Request
-class BaiduSpider(Spider):
 
+class WeiboSpider(Spider):
     # start_url ="https://www.baidu.com"
-    start_urls = ["https://www.baidu.com","https://www.baidu.com"]
+    start_urls = ["https://www.baidu.com", "https://www.baidu.com"]
 
     def parse(self,response):
         """

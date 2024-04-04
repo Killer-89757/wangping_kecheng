@@ -1,6 +1,7 @@
 from importlib import import_module
 from bald_spider.settings import default_settings
 from collections.abc import MutableMapping
+from copy import deepcopy
 
 
 class SettingsManager(MutableMapping):
@@ -84,6 +85,9 @@ class SettingsManager(MutableMapping):
 
     def __len__(self):
         return len(self.attributes)
+
+    def copy(self):
+        return deepcopy(self)
 
 
 if __name__ == "__main__":

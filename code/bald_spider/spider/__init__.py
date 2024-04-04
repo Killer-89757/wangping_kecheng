@@ -5,6 +5,18 @@ class Spider:
     def __init__(self):
         if not hasattr(self,"start_urls"):
             self.start_urls = []
+        self.crawler = None
+
+    @classmethod
+    def create_instance(cls,crawler):
+        """
+        强制用户在使用的时候按照我们的想法去创建对象
+        """
+        o = cls()
+        # 使得在创建的实例的时候也保留一份crawler
+        o.crawler = crawler
+        return o
+
 
     def start_request(self):
         if self.start_urls:
