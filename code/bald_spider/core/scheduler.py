@@ -16,3 +16,12 @@ class Scheduler:
 
     async def enqueue_request(self,request):
         await self.request_queue.put(request)
+
+    def idle(self):
+        """
+        判断当前的请求队列中时候还有数据
+        """
+        return len(self) == 0
+
+    def __len__(self):
+        return self.request_queue.qsize()

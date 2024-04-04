@@ -19,8 +19,13 @@ class Engine:
         self.scheduler:Optional[Scheduler] = None
         # 初始化spider
         self.spider:Optional[Spider] = None
+        # 控制爬虫进行的开关
+        self.running = False
 
     async def start_spider(self, spider):
+        # 打开开关
+        self.running = True
+
         # 得到spider
         self.spider = spider
 
@@ -40,7 +45,7 @@ class Engine:
 
     async def crawl(self):
         """主逻辑"""
-        while True:
+        while self.running:
             if (request := await self._get_next_request()) is not None:
                 await self._crawl(request)
             else:
@@ -51,7 +56,12 @@ class Engine:
                 except StopIteration:
                     self.start_requests = None
                 except Exception:
-                    break
+                    # 1.发起请求的task要运行完毕
+                    # 2.调度器是否空闲
+                    # 3.下载器是否空闲
+                    if not await self._exit():
+                        continue
+                    self.running = False
                 else:
                     # 入队
                     await self.enqueue_request(start_request)
@@ -69,12 +79,12 @@ class Engine:
         return await self.scheduler.next_request()
 
     async def _crawl(self,request):
-        # todo 实现并发
-        outputs = await self._fetch(request)
-        # todo 处理output
-        if outputs:
-            await self._handle_spider_output(outputs)
-
+        async def crawl_task():
+            outputs = await self._fetch(request)
+            # todo 处理output
+            if outputs:
+                await self._handle_spider_output(outputs)
+        asyncio.create_task(crawl_task(),name="crawl")
 
     async def _fetch(self,request):
         async def _success(_response):
@@ -103,3 +113,19 @@ class Engine:
             # todo 判断是不是数据,暂定为Item
             else:
                 raise OutputError(f"{type(self.spider)} must return Request or Item")
+
+    async def _exit(self):
+        """
+        其实在这个地方有一点错误就是我们先判断调度器和下载器，为空直接返回结束，但是任务可能还在运行
+        三者应该是共同决定是否结束的条件
+        """
+        # 调度器是否空闲
+        # 下载器是否空闲
+        if self.scheduler.idle() and self.downloader.idle():
+            return True
+        # 发起请求的task全部运行完毕
+        for task in asyncio.all_tasks():
+            # print(task.get_name())
+            if not task.done() and task.get_name() == "crawl":
+                return False
+        return True
