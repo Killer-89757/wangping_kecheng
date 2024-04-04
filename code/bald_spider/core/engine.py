@@ -6,7 +6,8 @@ from typing import Optional,Generator,Callable
 from bald_spider.core.scheduler import Scheduler
 from bald_spider.spider import Spider
 from bald_spider.utils.spider import transform
-
+from bald_spider.execptions import OutputError
+from bald_spider.http.request import Request
 
 class Engine:
     def __init__(self):
@@ -72,8 +73,7 @@ class Engine:
         outputs = await self._fetch(request)
         # todo 处理output
         if outputs:
-            async for output in outputs:
-                print(output)
+            await self._handle_spider_output(outputs)
 
 
     async def _fetch(self,request):
@@ -88,9 +88,18 @@ class Engine:
                 else:
                     # 是生成器类型，就都转化成异步生成器
                     return transform(_outputs)
-
         _response = await self.downloader.fetch(request)
         # 能够得到结果调用到callback，说明上面的downloader下载成功了，但是实际网络请求中并不一定能成功
         # 这个地方暂时只处理成功的代码
         outputs = await _success(_response)
         return outputs
+    async def _handle_spider_output(self,outputs):
+        """
+        在这个地方对输出的结果进行判断，数据走管道，请求重新回到spider
+        """
+        async for spider_output in outputs:
+            if isinstance(spider_output,Request):
+                await self.enqueue_request(spider_output)
+            # todo 判断是不是数据,暂定为Item
+            else:
+                raise OutputError(f"{type(self.spider)} must return Request or Item")
