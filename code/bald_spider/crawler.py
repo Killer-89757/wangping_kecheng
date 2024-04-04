@@ -4,6 +4,7 @@ from bald_spider.spider import Spider
 from bald_spider.settings.settings_manager import SettingsManager
 from bald_spider.execptions import SpiderTypeError
 from bald_spider.core.engine import Engine
+from bald_spider.utils.project import merge_settings
 
 
 class Crawler:
@@ -22,6 +23,7 @@ class Crawler:
     def _create_spider(self):
         # 不合理的原因：因为spider_cls是用户自定义的类，所以可以接受参数等，直接使用()的方式生成欠妥
         spider = self.spider_cls.create_instance(self)
+        self._set_spider(spider)
         return spider
 
     def _create_engine(self):
@@ -30,6 +32,8 @@ class Crawler:
         engine = Engine(self)
         return engine
 
+    def _set_spider(self,spider):
+        merge_settings(spider,self.settings)
 
 class CrawlerProcess:
     def __init__(self,settings=None):

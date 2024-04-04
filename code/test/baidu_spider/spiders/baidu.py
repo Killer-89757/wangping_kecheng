@@ -5,6 +5,8 @@ class BaiduSpider(Spider):
     # start_url ="https://www.baidu.com"
     start_urls = ["https://www.baidu.com","https://www.baidu.com"]
 
+    custom_settings = {"CONCURRENCY" : 8}
+
     def parse(self,response):
         """
         其实在这个部分，我们无法预测到用户会怎样书写代码(同步、异步) 我们都需要进行兼容

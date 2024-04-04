@@ -64,6 +64,8 @@ class SettingsManager(MutableMapping):
     def set_settings(self, module):
         # 我们可以直接传入模块、或者传入模块的str名称
         if isinstance(module, str):
+            # 因为我们的代码结构很好，所以不会出现路径加载不成功的问题
+            # 但是框架形成后，用户自定义编辑文件可能会出现找不到配置文件的情况
             module = import_module(module)
         for key in dir(module):
             if key.isupper():
