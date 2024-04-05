@@ -13,15 +13,23 @@
 
 - bald_spider：项目代码的地方
   - core:核心代码存放处
+    - downloader **下载器文件夹**
+      - \__init__.py  **下载器基类和元类**
+      - aiohttp_downloader.py **Aio下载器**
+      - httpx_downloader.py  **httpx下载器**
     - \__init__.py 
-    - download.py  **下载器**
     - engine.py        **引擎**
     - scheduler.py   **调度器**
+    - processor.py   **数据处理器**
   - spider：存放spider基类的地方
     - \__init__.py     **基类**
   - http：存放spider基类的地方
     - \__init__.py     
     - request.py     **请求类**
+    - response.py     **响应类**
+  - items  数据
+    - \_\_init\_\_.py  **Item元类**
+    - items.py   **数据类**
   - settings：存放spider基类的地方
     - \__init__.py     
     - default_settings.py     **默认配置**
@@ -31,6 +39,8 @@
     - pqueue.py  **自己封装的优先级队列**
     - spider.py  **爬虫工具：生成器转化工具等**
     - project.py  **获取用户配置工具**
+    - log.py   **全局日志系统**
+    - system.py  **Aio代理异常处理**
   - \__init__.py       **方便导包**
   - execption.py  **自定义异常**
   - task_manager.py  **任务管理**
@@ -42,6 +52,7 @@
       - baidu.py  **爬虫实例**
       - weibo.py  **爬虫实例**
     - \__init__.py 
+    - items.py  **用户数据类**
     - run.py     **项目启动文件**
     - settings.py  **用户配置文件**
   - misc
@@ -49,6 +60,8 @@
     - demo2.py **测试信号量**
     - demo3.py **测试模块信息(获取配置信息)**
     - demo4.py **\_\_getitem__的使用**
+    - demo5.py **\_\_getattr__和\_\_getattribute\_\_的使用**
+    - demo6.py  **测试下载器记录**
 
 ## 项目文档
 
@@ -57,3 +70,7 @@
 [猿人学-爬虫框架代码-part1](docs/猿人学-爬虫框架代码-part1.md)
 
 [猿人学-爬虫框架代码-part2](docs/猿人学-爬虫框架课程-part2.md)
+
+[猿人学-爬虫框架代码-part3](docs/猿人学-爬虫框架课程-part3.md)
+
+[猿人学-爬虫框架代码-part4](docs/猿人学-爬虫框架课程-part4.md)

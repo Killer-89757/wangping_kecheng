@@ -4,6 +4,8 @@ from bald_spider.crawler import CrawlerProcess
 import asyncio
 import time
 from bald_spider.utils.project import get_settings
+# 虽然没有调用，但是导入就是执行，只有在AioDownloader挂代理失败的时候在导入
+# from bald_spider.utils import system as _
 
 async def run():
     # srp 单一职责原则：single responsibility principle

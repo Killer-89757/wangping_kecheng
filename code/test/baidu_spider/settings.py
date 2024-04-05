@@ -3,4 +3,4 @@ CONCURRENCY = 16
 ABC = "qqqq"
 LOG_LEVEL = "DEBUG"
 # USE_SESSION = False
-DOWNLOADER = "bald_spider.core.download.AioDownloader"
+# DOWNLOADER = "bald_spider.core.downloader.aiohttp_downloader.AioDownloader"
