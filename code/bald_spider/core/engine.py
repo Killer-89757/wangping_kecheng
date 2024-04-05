@@ -1,7 +1,7 @@
 import asyncio
 from inspect import iscoroutine
 
-from bald_spider.core.download import Downloader,HttpxDownloader
+from bald_spider.core.download import AioDownloader,HttpxDownloader
 from typing import Optional,Generator,Callable,Final,Set
 from bald_spider.core.scheduler import Scheduler
 from bald_spider.spider import Spider
@@ -12,6 +12,7 @@ from bald_spider.task_manager import TaskManager
 from bald_spider.core.processor import Processor
 from bald_spider.items.items import Item
 from bald_spider.utils.log import get_logger
+from bald_spider.utils.project import load_class
 
 
 class Engine:
@@ -22,7 +23,7 @@ class Engine:
         # 初始化日志对象,就使用默认的日志级别INFO
         self.logger = get_logger(self.__class__.__name__)
         # 写类型注解 self.downloader: Downloader = Downloader()
-        self.downloader:Optional[HttpxDownloader] = None
+        self.downloader:Optional[AioDownloader] = None
         # 我们使用yield的方式得到生成器，兼容于urls和url
         self.start_requests:Optional[Generator] = None
         # 初始化调度器
@@ -50,7 +51,8 @@ class Engine:
         self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
-        self.downloader = HttpxDownloader(self.crawler)
+        downloader_cls = load_class(self.settings.get("DOWNLOADER"))
+        self.downloader = downloader_cls(self.crawler)
         if hasattr(self.downloader,"open"):
             self.downloader.open()
         # 使用iter将任何变成类型变成generator、防止人为复写(不用yield,使用return)的时候构造的数据不是generator

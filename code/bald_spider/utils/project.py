@@ -1,5 +1,6 @@
 import os
 import sys
+from importlib import import_module
 
 from bald_spider.settings.settings_manager import SettingsManager
 
@@ -28,3 +29,21 @@ def merge_settings(spider, settings):
     if hasattr(spider, "custom_settings"):
         custom_settings = getattr(spider, "custom_settings")
         settings.update_values(custom_settings)
+
+
+def load_class(_path):
+    """
+    根据配置文件的路径动态的加载下载类
+    """
+    if not isinstance(_path,str):
+        if callable(_path):
+            return _path
+        else:
+            raise TypeError(f"args expected string or object,got: {type(_path)}")
+    module, name = _path.rsplit(".", 1)
+    mod = import_module(module)
+    try:
+        cls = getattr(mod, name)
+    except Exception:
+        raise NameError(f"Module {module!r} does not define any object named {name!r}")
+    return cls

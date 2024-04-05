@@ -38,7 +38,7 @@ class ActiveRequestManager:
         return len(self._active)
 
 
-class Downloader:
+class AioDownloader:
     def __init__(self, crawler):
         self._active = ActiveRequestManager()
         self.session: Optional[ClientSession] = None

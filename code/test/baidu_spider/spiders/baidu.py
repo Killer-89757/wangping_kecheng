@@ -16,7 +16,7 @@ class BaiduSpider(Spider):
         """
         # print("parse",response)
         for i in range(3):
-            url = "https://www.baidu.com11"
+            url = "http://www.baidu.com"
             request = Request(url=url,callback=self.parse_page)
             yield request
 
