@@ -1,5 +1,6 @@
 from bald_spider.spider import Spider
 from bald_spider import Request
+from items import WeiboItem # type:ignore
 
 class WeiboSpider(Spider):
     # start_url ="https://www.baidu.com"
@@ -24,4 +25,9 @@ class WeiboSpider(Spider):
             yield request
 
     def parse_detail(self,response):
-        print("parse_detail",response)
+        # print("parse_detail",response)
+        item = WeiboItem()
+        item["url"] = "weibo.com"
+        item["title"] = "微博首页"
+        # item["aaa"] = ""
+        yield item

@@ -15,14 +15,14 @@ class BaiduSpider(Spider):
         若使用异步的方式，得到的其实就是异步生成器
         """
         # print("parse",response)
-        for i in range(10):
+        for i in range(3):
             url = "https://www.baidu.com"
             request = Request(url=url,callback=self.parse_page)
             yield request
 
     def parse_page(self,response):
         # print("parse_page",response)
-        for i in range(10):
+        for i in range(3):
             url = "https://www.baidu.com"
             request = Request(url=url,callback=self.parse_detail)
             yield request
@@ -32,4 +32,5 @@ class BaiduSpider(Spider):
         item = BaiduItem()
         item["url"] = "baidu.com"
         item["title"] = "百度首页"
-        # item["aaa"] = ""
+        # item.title = "111"
+        yield item

@@ -11,7 +11,7 @@ async def run():
     process = CrawlerProcess(settings)
     # 创建爬虫spider任务
     await process.crawl(BaiduSpider)
-    # await process.crawl(WeiboSpider)
+    await process.crawl(WeiboSpider)
     # 通过start实现真正的启动
     await process.start()
 

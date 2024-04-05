@@ -9,6 +9,7 @@ from bald_spider.utils.spider import transform
 from bald_spider.execptions import OutputError
 from bald_spider.http.request import Request
 from bald_spider.task_manager import TaskManager
+from bald_spider.items.items import Item
 
 class Engine:
     def __init__(self,crawler):
@@ -117,7 +118,8 @@ class Engine:
         async for spider_output in outputs:
             if isinstance(spider_output,Request):
                 await self.enqueue_request(spider_output)
-            # elif isinstance(spider_output, Item):
+            elif isinstance(spider_output, Item):
+                print(spider_output)
             else:
                 raise OutputError(f"{type(self.spider)} must return Request or Item")
 
