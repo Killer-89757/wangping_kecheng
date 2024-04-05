@@ -1,7 +1,7 @@
 import asyncio
 from inspect import iscoroutine
 
-from bald_spider.core.download import Downloader
+from bald_spider.core.download import Downloader,HttpxDownloader
 from typing import Optional,Generator,Callable,Final,Set
 from bald_spider.core.scheduler import Scheduler
 from bald_spider.spider import Spider
@@ -22,7 +22,7 @@ class Engine:
         # 初始化日志对象,就使用默认的日志级别INFO
         self.logger = get_logger(self.__class__.__name__)
         # 写类型注解 self.downloader: Downloader = Downloader()
-        self.downloader:Optional[Downloader] = None
+        self.downloader:Optional[HttpxDownloader] = None
         # 我们使用yield的方式得到生成器，兼容于urls和url
         self.start_requests:Optional[Generator] = None
         # 初始化调度器
@@ -50,7 +50,7 @@ class Engine:
         self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
-        self.downloader = Downloader(self.crawler)
+        self.downloader = HttpxDownloader(self.crawler)
         if hasattr(self.downloader,"open"):
             self.downloader.open()
         # 使用iter将任何变成类型变成generator、防止人为复写(不用yield,使用return)的时候构造的数据不是generator
@@ -124,6 +124,8 @@ class Engine:
                     # 是生成器类型，就都转化成异步生成器
                     return transform(_outputs)
         _response = await self.downloader.fetch(request)
+        if _response is None:
+            return None
         # 能够得到结果调用到callback，说明上面的downloader下载成功了，但是实际网络请求中并不一定能成功
         # 这个地方暂时只处理成功的代码
         outputs = await _success(_response)

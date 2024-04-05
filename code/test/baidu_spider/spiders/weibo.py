@@ -4,7 +4,7 @@ from items import WeiboItem # type:ignore
 
 class WeiboSpider(Spider):
     # start_url ="https://www.baidu.com"
-    start_urls = ["https://www.baidu.com", "https://www.baidu.com"]
+    start_urls = ["http://www.baidu.com", "http://www.baidu.com"]
 
     def parse(self,response):
         """
@@ -13,14 +13,14 @@ class WeiboSpider(Spider):
         """
         # print("parse",response)
         for i in range(3):
-            url = "https://www.baidu.com"
+            url = "http://www.baidu.com"
             request = Request(url=url,callback=self.parse_page)
             yield request
 
     def parse_page(self,response):
         # print("parse_page",response)
         for i in range(3):
-            url = "https://www.baidu.com"
+            url = "http://www.baidu.com"
             request = Request(url=url,callback=self.parse_detail)
             yield request
 
