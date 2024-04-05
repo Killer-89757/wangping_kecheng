@@ -117,7 +117,7 @@ class Engine:
         async for spider_output in outputs:
             if isinstance(spider_output,Request):
                 await self.enqueue_request(spider_output)
-            # todo 判断是不是数据,暂定为Item
+            # elif isinstance(spider_output, Item):
             else:
                 raise OutputError(f"{type(self.spider)} must return Request or Item")
 
