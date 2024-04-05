@@ -24,11 +24,13 @@ class BaiduSpider(Spider):
         # print("parse_page",response)
         for i in range(3):
             url = "https://www.baidu.com"
-            request = Request(url=url,callback=self.parse_detail)
+            meta = {"test":"waws"}
+            request = Request(url=url,callback=self.parse_detail,meta=meta)
             yield request
 
     def parse_detail(self,response):
         # print("parse_detail",response)
+        # print(response.text)
         item = BaiduItem()
         item["url"] = "baidu.com"
         item["title"] = "百度首页"

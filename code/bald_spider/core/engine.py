@@ -50,7 +50,9 @@ class Engine:
         self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
-        self.downloader = Downloader()
+        self.downloader = Downloader(self.crawler)
+        if hasattr(self.downloader,"open"):
+            self.downloader.open()
         # 使用iter将任何变成类型变成generator、防止人为复写(不用yield,使用return)的时候构造的数据不是generator
         self.start_requests = iter(spider.start_request())
         await self._open_spider()
@@ -84,6 +86,8 @@ class Engine:
                 else:
                     # 入队
                     await self.enqueue_request(start_request)
+        if not self.running:
+            await self.close_spider()
 
     async def enqueue_request(self,request):
         await self._scheduler_request(request)
@@ -98,6 +102,7 @@ class Engine:
         return await self.scheduler.next_request()
 
     async def _crawl(self,request):
+        # 因为在task这个地方完成了两件事，下载和处理输出，所以当任务完成的时候，下载也一定完成了
         async def crawl_task():
             outputs = await self._fetch(request)
             # todo 处理output
@@ -139,9 +144,12 @@ class Engine:
         三者应该是共同决定是否结束的条件
         """
         # 调度器是否空闲
-        # 下载器是否空闲
-        # 任务列表中是否为空
+        # 任务列表中是否为空(下载器是否空闲,包含关系)
         # 数据处理队列为空
+        # 保留下载器判断的原因是：必须要明确下载器状态，不能只从代码包含性的角度考量
         if self.scheduler.idle() and self.downloader.idle() and self.task_manager.all_done() and self.processor.idle():
             return True
         return False
+
+    async def close_spider(self):
+        await self.downloader.close()
