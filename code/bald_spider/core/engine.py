@@ -11,11 +11,16 @@ from bald_spider.http.request import Request
 from bald_spider.task_manager import TaskManager
 from bald_spider.core.processor import Processor
 from bald_spider.items.items import Item
+from bald_spider.utils.log import get_logger
+
 
 class Engine:
     def __init__(self,crawler):
         self.crawler = crawler
         self.settings = crawler.settings
+
+        # 初始化日志对象,就使用默认的日志级别INFO
+        self.logger = get_logger(self.__class__.__name__)
         # 写类型注解 self.downloader: Downloader = Downloader()
         self.downloader:Optional[Downloader] = None
         # 我们使用yield的方式得到生成器，兼容于urls和url
@@ -35,6 +40,7 @@ class Engine:
     async def start_spider(self, spider):
         # 打开开关
         self.running = True
+        self.logger.info(f"bald_spider started.(project name:{self.settings.get('PROJECT_NAME')})")
 
         # 得到spider
         self.spider = spider
@@ -63,16 +69,18 @@ class Engine:
                 try:
                     # 使用next取出迭代器中的数据
                     start_request = next(self.start_requests)
-
+                # 这个地方分开两次捕获异常，其实是为了确定初始请求是不是请求完整
                 except StopIteration:
                     self.start_requests = None
-                except Exception:
+                except Exception as exc:
                     # 1.发起请求的task要运行完毕
                     # 2.调度器是否空闲
                     # 3.下载器是否空闲
                     if not await self._exit():
                         continue
                     self.running = False
+                    if self.start_requests is not None:
+                        self.logger.error(f"Error during start_requests:{exc}")
                 else:
                     # 入队
                     await self.enqueue_request(start_request)
