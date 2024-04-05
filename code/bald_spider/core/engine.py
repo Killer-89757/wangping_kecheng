@@ -9,6 +9,7 @@ from bald_spider.utils.spider import transform
 from bald_spider.execptions import OutputError
 from bald_spider.http.request import Request
 from bald_spider.task_manager import TaskManager
+from bald_spider.core.processor import Processor
 from bald_spider.items.items import Item
 
 class Engine:
@@ -21,6 +22,8 @@ class Engine:
         self.start_requests:Optional[Generator] = None
         # 初始化调度器
         self.scheduler:Optional[Scheduler] = None
+        # 初始化数据处理器
+        self.processor:Optional[Processor] = None
         # 初始化spider
         self.spider:Optional[Spider] = None
         # 控制爬虫进行的开关
@@ -36,8 +39,9 @@ class Engine:
         # 得到spider
         self.spider = spider
 
-        # 初始化调度器和下载器
+        # 初始化调度器和下载器、数据处理器
         self.scheduler = Scheduler()
+        self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
         self.downloader = Downloader()
@@ -116,10 +120,8 @@ class Engine:
         在这个地方对输出的结果进行判断，数据走管道，请求重新回到spider
         """
         async for spider_output in outputs:
-            if isinstance(spider_output,Request):
-                await self.enqueue_request(spider_output)
-            elif isinstance(spider_output, Item):
-                print(spider_output)
+            if isinstance(spider_output,(Request,Item)):
+                await self.processor.enqueue(spider_output)
             else:
                 raise OutputError(f"{type(self.spider)} must return Request or Item")
 
@@ -131,6 +133,7 @@ class Engine:
         # 调度器是否空闲
         # 下载器是否空闲
         # 任务列表中是否为空
-        if self.scheduler.idle() and self.downloader.idle() and self.task_manager.all_done():
+        # 数据处理队列为空
+        if self.scheduler.idle() and self.downloader.idle() and self.task_manager.all_done() and self.processor.idle():
             return True
         return False
