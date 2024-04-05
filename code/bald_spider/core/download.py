@@ -1,7 +1,10 @@
-import requests
 import asyncio
 import random
-
+# aiohttp httpx 插件化：插拔器，即插即用
+# 思路：
+# 1.在Engine中需要用到fetch、idle方法，需要分别实现
+# 2.我们生成的response是不同的，所以我们需要进行兼容
+# 3.我们根据配置文件实现动态加载
 
 class Downloader:
     def __init__(self):
