@@ -5,7 +5,10 @@ from bald_spider.settings.settings_manager import SettingsManager
 from bald_spider.execptions import SpiderTypeError
 from bald_spider.core.engine import Engine
 from bald_spider.utils.project import merge_settings
+import signal
+from bald_spider.utils.log import get_logger
 
+logger = get_logger(__name__)
 
 class Crawler:
     def __init__(self,spider_cls,settings):
@@ -40,6 +43,8 @@ class CrawlerProcess:
         self.crawlers:Final[Set] = set()
         self._active:Final[Set] = set()
         self.settings = settings
+        # `ctrl + c`的信号是SIGINT
+        signal.signal(signal.SIGINT,self._shutdown)
 
     # 在这个地方，我们可以实例化多个爬虫，那么在创建的时候使用的是一个配置文件
     # 配置管理器中使用的是可变的Mapping类型，这样会相互干扰，所以需要对配置管理进行深拷贝
@@ -63,3 +68,8 @@ class CrawlerProcess:
             raise SpiderTypeError(f"{type(self)}.crawl args:String is not supported")
         crawler = Crawler(spider_cls,self.settings)
         return crawler
+
+    def _shutdown(self,_signum,_frame):
+        for crawler in self.crawlers:
+            crawler.engine.running = False
+        logger.warning(f"spider received `ctrl c` single,closed")
