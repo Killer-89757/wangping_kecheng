@@ -18,7 +18,6 @@ class MiddlewareManager:
         middlewares = self.crawler.settings.getlist("MIDDLEWARES")
         self._add_middleware(middlewares)
         self._add_method()
-        breakpoint()
 
     def _add_method(self):
         for middleware in self.middlewares:
