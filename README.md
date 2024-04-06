@@ -36,6 +36,7 @@
     - settings_manager.py     **配置管理器**
   - utils: 工具包
     - \__init__.py 
+    - date  **处理时间工具**
     - pqueue.py  **自己封装的优先级队列**
     - spider.py  **爬虫工具：生成器转化工具等**
     - project.py  **获取用户配置工具**
@@ -45,6 +46,7 @@
   - execption.py  **自定义异常**
   - task_manager.py  **任务管理**
   - crawler.py    **工程启动封装**
+  - stats_collector.py **统计信息封装**
 - test：测试爬虫的代码
   - baidu_spider
     - spiders  用户爬虫
@@ -74,3 +76,5 @@
 [猿人学-爬虫框架代码-part3](docs/猿人学-爬虫框架课程-part3.md)
 
 [猿人学-爬虫框架代码-part4](docs/猿人学-爬虫框架课程-part4.md)
+
+[猿人学-爬虫框架代码-part5](docs/猿人学-爬虫框架课程-part5.md)
