@@ -30,6 +30,9 @@
   - items  数据
     - \_\_init\_\_.py  **Item元类**
     - items.py   **数据类**
+  - middleware  **中间件**
+    - \_\_init\_\_.py  **中间件基类**
+    - middleware_manager.py   **中间件管理类**
   - settings：存放spider基类的地方
     - \__init__.py     
     - default_settings.py     **默认配置**
@@ -56,6 +59,7 @@
     - \__init__.py 
     - items.py  **用户数据类**
     - run.py     **项目启动文件**
+    - middleware.py    **用户中间件**
     - settings.py  **用户配置文件**
   - misc
     - demo1.py **测试信号量**
@@ -64,6 +68,8 @@
     - demo4.py **\_\_getitem__的使用**
     - demo5.py **\_\_getattr__和\_\_getattribute\_\_的使用**
     - demo6.py  **测试下载器记录**
+    - demo7.py  **测试setdefault**
+    - demo8.py  **middleware_method示例**
 
 ## 项目文档
 
@@ -78,3 +84,5 @@
 [猿人学-爬虫框架代码-part4](docs/猿人学-爬虫框架课程-part4.md)
 
 [猿人学-爬虫框架代码-part5](docs/猿人学-爬虫框架课程-part5.md)
+
+[猿人学-爬虫框架代码-part6](docs/猿人学-爬虫框架课程-part6.md)
