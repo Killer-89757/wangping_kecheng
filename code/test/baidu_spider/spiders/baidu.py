@@ -7,7 +7,7 @@ class BaiduSpider(Spider):
     # start_url ="https://www.baidu.com"
     start_urls = ["http://www.baidu.com","http://www.baidu.com"]
 
-    custom_settings = {"CONCURRENCY" : 8}
+    custom_settings = {"CONCURRENCY" : 1}
 
     def parse(self,response):
         """
@@ -15,7 +15,7 @@ class BaiduSpider(Spider):
         若使用异步的方式，得到的其实就是异步生成器
         """
         # print("parse",response)
-        for i in range(3):
+        for i in range(2):
             url = "http://www.baidu.com"
             request = Request(url=url,callback=self.parse_page)
             yield request

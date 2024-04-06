@@ -56,7 +56,7 @@ class Engine:
         self.spider = spider
 
         # 初始化调度器和下载器、数据处理器
-        self.scheduler = Scheduler()
+        self.scheduler = Scheduler(self.crawler)
         self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
@@ -168,3 +168,4 @@ class Engine:
         # 为了处理异常关闭下，请求中途断开，然后报错的问题，我们可以等所有的请求请求完毕，在关闭下载器
         await asyncio.gather(*self.task_manager.current_task)
         await self.downloader.close()
+        await self.crawler.close()

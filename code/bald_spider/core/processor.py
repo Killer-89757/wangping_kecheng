@@ -18,6 +18,7 @@ class Processor:
                 await self._process_item(result)
 
     async def _process_item(self, item: Item):
+        self.crawler.stats.inc_value("item_successful")
         print(item)
 
     async def enqueue(self, output: Union[Request, Item]):

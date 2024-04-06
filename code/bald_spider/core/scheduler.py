@@ -3,7 +3,8 @@ from typing import Optional
 from bald_spider.utils.pqueue import SpiderPriorityQueue
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self,crawler):
+        self.crawler = crawler
         # 使用优先级队列，不同的请求的优先级不同
         self.request_queue: Optional[PriorityQueue] = None
 
@@ -16,6 +17,8 @@ class Scheduler:
 
     async def enqueue_request(self,request):
         await self.request_queue.put(request)
+        # 将请求的数量 +1
+        self.crawler.stats.inc_value("request_Scheduled_count")
 
     def idle(self):
         """

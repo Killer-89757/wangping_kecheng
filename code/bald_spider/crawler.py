@@ -7,6 +7,8 @@ from bald_spider.core.engine import Engine
 from bald_spider.utils.project import merge_settings
 import signal
 from bald_spider.utils.log import get_logger
+from bald_spider.stats_collector import StatsCollector
+from bald_spider.utils.date import now
 
 logger = get_logger(__name__)
 
@@ -15,12 +17,19 @@ class Crawler:
         self.spider_cls = spider_cls
         self.spider:Optional[Spider] = None
         self.engine:Optional[Engine] = None
+        self.stats:Optional[StatsCollector] = None
         self.settings:SettingsManager = settings.copy()
 
     async def crawl(self):
         self.spider = self._create_spider()
         self.engine = self._create_engine()
+        self.stats = self._create_stats()
         await self.engine.start_spider(self.spider)
+
+    def _create_stats(self):
+        stats = StatsCollector(self)
+        stats["start_time"] = now()
+        return stats
 
     # 在这个地方还有个好处就是 engine、spider、crawler之间互相关联，三者都互有对方
     def _create_spider(self):
@@ -37,6 +46,10 @@ class Crawler:
 
     def _set_spider(self,spider):
         merge_settings(spider,self.settings)
+
+    async def close(self,reason="finished"):
+        self.stats["end_time"] = now()
+        self.stats.close_spider(self.spider,reason)
 
 class CrawlerProcess:
     def __init__(self,settings=None):
