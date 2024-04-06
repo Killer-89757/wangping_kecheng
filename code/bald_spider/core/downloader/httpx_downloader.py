@@ -30,6 +30,9 @@ class HttpxDownloader(DownloaderBase):
         except Exception as exc:
             self.logger.error(f"Error druing request:{exc}")
             return None
+        else:
+            # 临时性代码
+            self.crawler.stats.inc_value("response_received_count")
         return self.structure_response(request, response, body)
 
     @staticmethod

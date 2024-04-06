@@ -48,7 +48,6 @@ class Crawler:
         merge_settings(spider,self.settings)
 
     async def close(self,reason="finished"):
-        self.stats["end_time"] = now()
         self.stats.close_spider(self.spider,reason)
 
 class CrawlerProcess:
@@ -85,4 +84,6 @@ class CrawlerProcess:
     def _shutdown(self,_signum,_frame):
         for crawler in self.crawlers:
             crawler.engine.running = False
+            crawler.engine.normal = False
+            crawler.stats.close_spider(crawler.spider,"ctrl c")
         logger.warning(f"spider received `ctrl c` single,closed")

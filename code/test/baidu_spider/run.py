@@ -17,6 +17,5 @@ async def run():
     # 通过start实现真正的启动
     await process.start()
 
-s = time.time()
+
 asyncio.run(run())
-print(time.time() - s)

@@ -37,6 +37,8 @@ class Engine:
         # 初始化task管理器
         print("当前的并发数是：",self.settings.getint("CONCURRENCY"))
         self.task_manager:TaskManager= TaskManager(self.settings.getint("CONCURRENCY"))
+        # 程序是不是正常的
+        self.normal = True
 
     def _get_downloader_cls(self):
         downloader_cls = load_class(self.settings.get("DOWNLOADER"))
@@ -71,6 +73,7 @@ class Engine:
     async def _open_spider(self):
         crawling = asyncio.create_task(self.crawl())
         # 这个地方可以做其他事情
+        asyncio.create_task(self.scheduler.interval_log(self.settings.getint("INTERVAL")))
         await crawling
 
     async def crawl(self):
@@ -168,4 +171,5 @@ class Engine:
         # 为了处理异常关闭下，请求中途断开，然后报错的问题，我们可以等所有的请求请求完毕，在关闭下载器
         await asyncio.gather(*self.task_manager.current_task)
         await self.downloader.close()
-        await self.crawler.close()
+        if self.normal:
+            await self.crawler.close()
