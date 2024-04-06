@@ -32,7 +32,7 @@ class BaiduSpider(Spider):
         # print("parse_detail",response)
         # print(response.text)
         item = BaiduItem()
-        item["url"] = "baidu.com"
-        item["title"] = "百度首页"
+        item["url"] = response.url
+        item["title"] = response.xpath("//title/text()").get()
         # item.title = "111"
         yield item

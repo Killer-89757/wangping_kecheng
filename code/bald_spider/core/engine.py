@@ -38,7 +38,7 @@ class Engine:
         print("当前的并发数是：",self.settings.getint("CONCURRENCY"))
         self.task_manager:TaskManager= TaskManager(self.settings.getint("CONCURRENCY"))
 
-    def _get_downloader(self):
+    def _get_downloader_cls(self):
         downloader_cls = load_class(self.settings.get("DOWNLOADER"))
         # 暴漏下载器给用户可自行定义，这样的话，用户未必遵守规定
         # 为了代码的规范，我们使得下载器必须要继承自DownloaderBase
@@ -60,7 +60,7 @@ class Engine:
         self.processor = Processor(self.crawler)
         if hasattr(self.scheduler,"open"):
             self.scheduler.open()
-        downloader_cls = self._get_downloader()
+        downloader_cls = self._get_downloader_cls()
         self.downloader = downloader_cls.create_instance(self.crawler)
         if hasattr(self.downloader,"open"):
             self.downloader.open()

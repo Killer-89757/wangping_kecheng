@@ -13,6 +13,7 @@ class HttpxDownloader(DownloaderBase):
         self._timeout: Optional[httpx.Timeout] = None
 
     def open(self):
+        super().open()
         request_time = self.crawler.settings.getint("REQUEST_TIMEOUT")
         self._timeout = httpx.Timeout(timeout=request_time)
 
